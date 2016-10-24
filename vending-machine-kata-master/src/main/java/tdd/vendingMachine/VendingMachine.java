@@ -15,7 +15,7 @@ public class VendingMachine {
 
 	public static final String STR_NO_CHANGE = "No change";
 
-	private static final String SELECT_PRODUCT = "Select product";
+	public static final String SELECT_PRODUCT = "Select product";
 
 	public static final String STR_NO_PRODUCT = "No product";
 	
@@ -34,6 +34,8 @@ public class VendingMachine {
 	private float userBalance = 0;
 	
 	private boolean isCanceled = false;
+	
+	private int selectedShelf;
 
 	public VendingMachine(int shelvesNo){
 		setShelves(new Shelve[shelvesNo]);
@@ -77,7 +79,13 @@ public class VendingMachine {
 		this.selectedProduct = selectedProduct;
 	}
 	
+	public int getSelectedShelf() {
+		return selectedShelf;
+	}
 
+	public void setSelectedShelf(int selectedShelf) {
+		this.selectedShelf = selectedShelf;
+	}
 
 	public Map<Nominal,Integer> getNominals() {
 		return nominals;
@@ -132,8 +140,9 @@ public class VendingMachine {
 	 * Wrzucenie monety przez użytkownika do maszyny
 	 * 
 	 * @param nominal
+	 * @return 
 	 */
-	public void putCoin(Nominal nominal) {
+	public Map<Nominal, Integer> putCoin(Nominal nominal) {
 		this.getCoinOperations().add(nominal);
 		
 		this.setUserBalance(this.getUserBalance() + nominal.value());
@@ -144,11 +153,21 @@ public class VendingMachine {
 			this.getNominals().put(nominal, current++);
 		}
 		
+		if(this.getSelectedProduct().getPrice() == this.getUserBalance()){
+			return this.getChange();
+		}
+		
 		if(this.checkChange() == null){
 			this.getDisplay().setMessage(STR_NO_CHANGE);
+			return null;
 		} else {
+			if(this.getSelectedProduct().getPrice() < this.getUserBalance()){
+				return this.getChange();
+			}
 			this.setDisplayMessage();
+			return new HashMap<>();
 		}
+		
 		
 	}
 
@@ -185,11 +204,11 @@ public class VendingMachine {
 	}
 	
 	/**
-	 * Zwrócenie reszty
+	 * Zwrócenie reszty oraz wydanie produktu
 	 * 
 	 * @return
 	 */
-	public Map<Nominal, Integer> getChange() {
+	private Map<Nominal, Integer> getChange() {
 		Map<Nominal,Integer> changeToRemove = this.checkChange();
 		
 		if(changeToRemove == null){
@@ -205,6 +224,8 @@ public class VendingMachine {
 		}
 		
 		this.setUserBalance(0);
+		this.getShelves()[this.getSelectedShelf()].getPrudct();
+		this.getDisplay().setMessage(SELECT_PRODUCT);
 		return changeToRemove;
 	}
 
@@ -249,6 +270,8 @@ public class VendingMachine {
 		String message = this.getSelectedProduct().getName() + " " + df.format(this.getSelectedProduct().getPrice() - this.getUserBalance());	
 		this.getDisplay().setMessage(message);
 	}
+
+
 
 
 
