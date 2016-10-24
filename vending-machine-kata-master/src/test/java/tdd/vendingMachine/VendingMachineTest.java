@@ -69,10 +69,10 @@ public class VendingMachineTest {
     	machine.setNominals(initNominals);
     	machine.selectShelve(1);
 
-    	machine.putCoin(Nominal.FIVE);
+    	Map<Nominal,Integer> change = machine.putCoin(Nominal.FIVE);
     	
-    	assertEquals(machine.getUserBalance(), 5.00f, 0);
-    	Map<Nominal,Integer> change = machine.getChange();
+    	//assertEquals(machine.getUserBalance(), 5.00f, 0);
+    	//Map<Nominal,Integer> change = machine.getChange();
     	
     	
     	assertEquals(change.get(Nominal.ONE).intValue(), 1);
@@ -92,16 +92,16 @@ public class VendingMachineTest {
     	
     	
     	
-    	machine.putCoin(Nominal.FIVE);
+    	Map<Nominal,Integer> change = machine.putCoin(Nominal.FIVE);
     	
-    	assertEquals(machine.getUserBalance(), 5.00f, 0);
-    	Map<Nominal,Integer> change = machine.getChange();
+    	//assertEquals(machine.getUserBalance(), 5.00f, 0);
     	
     	
     	assertEquals(change.get(Nominal.ZERO_FIFTY).intValue(), 3);
     	assertEquals(change.get(Nominal.ZERO_TWENTY).intValue(), 4);
     	assertEquals(change.get(Nominal.ZERO_TEN).intValue(), 7);
     	assertEquals(machine.getUserBalance(), 0f,0);
+    	assertEquals(machine.getDisplay().getMessage(), VendingMachine.SELECT_PRODUCT);
     }
     
     
@@ -131,6 +131,18 @@ public class VendingMachineTest {
     	machine.cancel();
     	
     	assertEquals(machine.getUserBalance(), 0f,0);
+    }
+    
+    @Test
+    public void testEmptyAfterTaken(){
+    	machine.selectShelve(1);
+    	
+    	machine.putCoin(Nominal.TWO);
+    	
+    	assertEquals(machine.getDisplay().getMessage(), VendingMachine.SELECT_PRODUCT);
+    	
+    	machine.selectShelve(1);
+    	assertEquals(machine.getDisplay().getMessage(), VendingMachine.STR_NO_PRODUCT);
     }
     
     
